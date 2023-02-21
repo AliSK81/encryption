@@ -1,30 +1,26 @@
-def encrypt(txt: str) -> str:
+import math
+
+
+def encrypt(txt: str, key: int) -> str:
     cipher = ''
 
-    for i in range(0, len(txt), 2):
-        cipher += txt[i]
-
-    for i in range(1, len(txt), 2):
-        cipher += txt[i]
+    for i in range(0, key):
+        for j in range(i, len(txt), key):
+            cipher += txt[j]
 
     return cipher
 
 
-def decrypt(cipher: str) -> str:
+def decrypt(cipher: str, key: int) -> str:
     txt = ''
 
-    mid = (len(cipher) + 1) // 2
-
-    for i in range(mid):
-        txt += cipher[i]
-
-        j = i + mid
-
-        if j < len(cipher):
+    rows = math.ceil(len(cipher) / key)
+    for i in range(0, rows):
+        for j in range(i, len(cipher), rows):
             txt += cipher[j]
 
     return txt
 
 
 if __name__ == '__main__':
-    print(decrypt(encrypt(txt='plaintext')))
+    print(decrypt(encrypt(txt='plaintext', key=3), key=3))
