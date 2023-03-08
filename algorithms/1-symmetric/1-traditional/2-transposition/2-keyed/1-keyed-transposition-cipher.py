@@ -2,55 +2,59 @@ import math
 import random
 
 
-def encrypt(txt: str, mapping: dict) -> str:
-    cipher = ''
+class KeyedTranspositionCipher:
+    def __init__(self, mapping: dict):
+        self.mapping = mapping
+        self.inverted_mapping = self.__invert_mapping(mapping)
 
-    group_size = math.ceil(len(txt) / len(mapping))
+    def encrypt(self, txt: str) -> str:
+        cipher = ''
 
-    for i in range(group_size):
-        for j in range(len(mapping)):
-            k = i * len(mapping) + mapping[j]
+        group_size = math.ceil(len(txt) / len(self.mapping))
 
-            if k >= len(txt):
-                continue
+        for i in range(group_size):
+            for j in range(len(self.mapping)):
+                k = i * len(self.mapping) + self.mapping[j]
 
-            cipher += txt[k]
+                if k >= len(txt):
+                    continue
 
-    return cipher.upper()
+                cipher += txt[k].lower()
 
+        return cipher.upper()
 
-def decrypt(cipher: str, mapping: dict) -> str:
-    txt = ''
+    def decrypt(self, cipher: str) -> str:
+        txt = ''
 
-    group_size = math.ceil(len(cipher) / len(mapping))
+        group_size = math.ceil(len(cipher) / len(self.inverted_mapping))
 
-    for i in range(group_size):
-        for j in range(len(mapping)):
-            k = i * len(mapping) + mapping[j]
+        for i in range(group_size):
+            for j in range(len(self.inverted_mapping)):
+                k = i * len(self.inverted_mapping) + self.inverted_mapping[j]
 
-            if k >= len(cipher):
-                continue
+                if k >= len(cipher):
+                    continue
 
-            txt += cipher[k]
+                txt += cipher[k].upper()
 
-    return txt.lower()
+        return txt.lower()
 
+    @staticmethod
+    def generate_mapping(size: int) -> dict:
+        keys = [i for i in range(size)]
+        values = [i for i in range(size)]
 
-def generate_mapping(size: int) -> dict:
-    keys = [i for i in range(size)]
-    values = [i for i in range(size)]
+        random.shuffle(keys)
+        random.shuffle(values)
 
-    random.shuffle(keys)
-    random.shuffle(values)
+        return dict(zip(keys, values))
 
-    return dict(zip(keys, values))
-
-
-def invert_mapping(mapping: dict) -> dict:
-    return {v: k for k, v in mapping.items()}
+    @staticmethod
+    def __invert_mapping(mapping: dict) -> dict:
+        return {v: k for k, v in mapping.items()}
 
 
 if __name__ == '__main__':
-    mapping = generate_mapping(size=2)
+    algo = KeyedTranspositionCipher(mapping=KeyedTranspositionCipher.generate_mapping(size=2))
 
-    print(decrypt(encrypt(txt='plaintext', mapping=mapping), mapping=invert_mapping(mapping)))
+    print(algo.decrypt(algo.encrypt(txt='plaintext')))

@@ -1,26 +1,30 @@
 import math
 
 
-def encrypt(txt: str, key: int) -> str:
-    cipher = ''
+class RailFenceCipher:
+    def __init__(self, key: int):
+        self.key = key
 
-    for i in range(0, key):
-        for j in range(i, len(txt), key):
-            cipher += txt[j]
+    def encrypt(self, txt: str) -> str:
+        cipher = ''
 
-    return cipher
+        for i in range(0, self.key):
+            for j in range(i, len(txt), self.key):
+                cipher += txt[j]
 
+        return cipher
 
-def decrypt(cipher: str, key: int) -> str:
-    txt = ''
+    def decrypt(self, cipher: str) -> str:
+        txt = ''
 
-    rows = math.ceil(len(cipher) / key)
-    for i in range(0, rows):
-        for j in range(i, len(cipher), rows):
-            txt += cipher[j]
+        rows = math.ceil(len(cipher) / self.key)
+        for i in range(0, rows):
+            for j in range(i, len(cipher), rows):
+                txt += cipher[j]
 
-    return txt
+        return txt
 
 
 if __name__ == '__main__':
-    print(decrypt(encrypt(txt='plaintext', key=3), key=3))
+    algo = RailFenceCipher(key=3)
+    print(algo.decrypt(algo.encrypt(txt='plaintext')))
